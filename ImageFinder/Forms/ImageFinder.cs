@@ -18,7 +18,8 @@ namespace ImageFinder
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 string selectedPath = dialog.SelectedPath;
-                MessageBox.Show($"Selected Directory: {selectedPath}");
+
+                lblImageDirectory.Text = selectedPath;
             }
         }
     }
