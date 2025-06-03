@@ -1,6 +1,6 @@
 ﻿namespace ImageFinder
 {
-    partial class Form1
+    partial class ImageFinder
     {
         /// <summary>
         ///  Required designer variable.

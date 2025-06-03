@@ -1,8 +1,8 @@
 namespace ImageFinder
 {
-    public partial class Form1 : Form
+    public partial class ImageFinder : Form
     {
-        public Form1()
+        public ImageFinder()
         {
             InitializeComponent();
         }
