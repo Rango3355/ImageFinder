@@ -10,7 +10,7 @@ public partial class ImageFinder : Form
         InitializeComponent();
     }
 
-    private void btnSelectDirectory_Click(object sender, EventArgs e)
+    private void BtnSelectDirectory_Click(object sender, EventArgs e)
     {
         using FolderBrowserDialog dialog = new();
 
