@@ -1,26 +1,25 @@
-namespace ImageFinder
+namespace ImageFinder;
+
+public partial class ImageFinder : Form
 {
-    public partial class ImageFinder : Form
+    public ImageFinder()
     {
-        public ImageFinder()
+        InitializeComponent();
+    }
+
+    private void btnSelectDirectory_Click(object sender, EventArgs e)
+    {
+        using FolderBrowserDialog dialog = new();
+
+        dialog.Description = "Select a directory to search for images";
+        dialog.UseDescriptionForTitle = true;
+        dialog.ShowNewFolderButton = true;
+
+        if (dialog.ShowDialog() == DialogResult.OK)
         {
-            InitializeComponent();
-        }
+            string selectedPath = dialog.SelectedPath;
 
-        private void btnSelectDirectory_Click(object sender, EventArgs e)
-        {
-            using FolderBrowserDialog dialog = new();
-
-            dialog.Description = "Select a directory to search for images";
-            dialog.UseDescriptionForTitle = true;
-            dialog.ShowNewFolderButton = true;
-
-            if (dialog.ShowDialog() == DialogResult.OK)
-            {
-                string selectedPath = dialog.SelectedPath;
-
-                lblImageDirectory.Text = selectedPath;
-            }
+            lblImageDirectory.Text = selectedPath;
         }
     }
 }
