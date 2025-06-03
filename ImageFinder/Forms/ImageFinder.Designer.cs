@@ -30,31 +30,43 @@
         {
             btnSelectDirectory = new Button();
             lblImageDirectory = new Label();
+            lblDescription = new Label();
             SuspendLayout();
             // 
             // btnSelectDirectory
             // 
-            btnSelectDirectory.Location = new Point(25, 101);
+            btnSelectDirectory.Location = new Point(40, 101);
             btnSelectDirectory.Name = "btnSelectDirectory";
             btnSelectDirectory.Size = new Size(94, 29);
             btnSelectDirectory.TabIndex = 0;
             btnSelectDirectory.Text = "Select";
             btnSelectDirectory.UseVisualStyleBackColor = true;
-            btnSelectDirectory.Click += btnSelectDirectory_Click;
+            btnSelectDirectory.Click += BtnSelectDirectory_Click;
             // 
             // lblImageDirectory
             // 
             lblImageDirectory.AutoSize = true;
-            lblImageDirectory.Location = new Point(143, 105);
+            lblImageDirectory.Location = new Point(152, 105);
             lblImageDirectory.Name = "lblImageDirectory";
-            lblImageDirectory.Size = new Size(0, 20);
+            lblImageDirectory.Size = new Size(70, 20);
             lblImageDirectory.TabIndex = 1;
+            lblImageDirectory.Text = "Directory";
+            // 
+            // lblDescription
+            // 
+            lblDescription.AutoSize = true;
+            lblDescription.Location = new Point(40, 31);
+            lblDescription.Name = "lblDescription";
+            lblDescription.Size = new Size(85, 20);
+            lblDescription.TabIndex = 2;
+            lblDescription.Text = "Description";
             // 
             // ImageFinder
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(lblDescription);
             Controls.Add(lblImageDirectory);
             Controls.Add(btnSelectDirectory);
             Name = "ImageFinder";
@@ -67,5 +79,6 @@
 
         private Button btnSelectDirectory;
         private Label lblImageDirectory;
+        private Label lblDescription;
     }
 }
