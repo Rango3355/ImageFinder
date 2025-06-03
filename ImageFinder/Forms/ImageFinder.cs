@@ -1,3 +1,4 @@
+using ImageFinder.app.Helpers;
 using ImageFinder.app.Models;
 
 namespace ImageFinder;
@@ -12,11 +13,7 @@ public partial class ImageFinder : Form
 
     private void BtnSelectDirectory_Click(object sender, EventArgs e)
     {
-        using FolderBrowserDialog dialog = new();
-
-        dialog.Description = "Select a directory to search for images";
-        dialog.UseDescriptionForTitle = true;
-        dialog.ShowNewFolderButton = true;
+        using FolderBrowserDialog dialog = DirectoryHelpers.GetImageDirectory();
 
         if (dialog.ShowDialog() == DialogResult.OK)
         {
