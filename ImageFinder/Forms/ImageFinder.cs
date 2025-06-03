@@ -1,7 +1,10 @@
+using ImageFinder.app.Models;
+
 namespace ImageFinder;
 
 public partial class ImageFinder : Form
 {
+    private ImageDirectoryModel _imageDirectoryModel = new();
     public ImageFinder()
     {
         InitializeComponent();
@@ -17,9 +20,9 @@ public partial class ImageFinder : Form
 
         if (dialog.ShowDialog() == DialogResult.OK)
         {
-            string selectedPath = dialog.SelectedPath;
+            _imageDirectoryModel.DirectoryPath = dialog.SelectedPath;
 
-            lblImageDirectory.Text = selectedPath;
+            lblImageDirectory.Text = _imageDirectoryModel.DirectoryPath;
         }
     }
 }
