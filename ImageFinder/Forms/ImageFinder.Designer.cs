@@ -28,12 +28,32 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Text = "Form1";
+            btnSelectDirectory = new Button();
+            SuspendLayout();
+            // 
+            // btnSelectDirectory
+            // 
+            btnSelectDirectory.Location = new Point(235, 155);
+            btnSelectDirectory.Name = "btnSelectDirectory";
+            btnSelectDirectory.Size = new Size(94, 29);
+            btnSelectDirectory.TabIndex = 0;
+            btnSelectDirectory.Text = "Select";
+            btnSelectDirectory.UseVisualStyleBackColor = true;
+            btnSelectDirectory.Click += btnSelectDirectory_Click;
+            // 
+            // ImageFinder
+            // 
+            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(800, 450);
+            Controls.Add(btnSelectDirectory);
+            Name = "ImageFinder";
+            Text = "ImageFinder";
+            ResumeLayout(false);
         }
 
         #endregion
+
+        private Button btnSelectDirectory;
     }
 }
