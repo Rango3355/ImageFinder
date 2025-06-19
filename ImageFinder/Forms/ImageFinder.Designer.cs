@@ -99,7 +99,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(851, 221);
+            ClientSize = new Size(699, 221);
             Controls.Add(btmSubmit);
             Controls.Add(lblImageDestination);
             Controls.Add(btnDestination);

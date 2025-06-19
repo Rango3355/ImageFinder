@@ -1,3 +1,4 @@
+using ImageFinder.app.Collector;
 using ImageFinder.app.Helpers;
 using ImageFinder.app.Models;
 
@@ -5,7 +6,7 @@ namespace ImageFinder;
 
 public partial class ImageFinder : Form
 {
-    private ImageDirectoryModel _imageDirectoryModel = new();
+    private readonly ImageDirectoryModel _imageDirectoryModel = new();
     public ImageFinder()
     {
         InitializeComponent();
@@ -17,9 +18,9 @@ public partial class ImageFinder : Form
 
         if (dialog.ShowDialog() == DialogResult.OK)
         {
-            _imageDirectoryModel.DirectoryPath = dialog.SelectedPath;
+            _imageDirectoryModel.SourceDirectoryPath = dialog.SelectedPath;
 
-            lblImageDirectory.Text = _imageDirectoryModel.DirectoryPath;
+            lblImageDirectory.Text = _imageDirectoryModel.SourceDirectoryPath;
         }
     }
 
@@ -29,14 +30,14 @@ public partial class ImageFinder : Form
 
         if (dialog.ShowDialog() == DialogResult.OK)
         {
-            _imageDirectoryModel.DestinationPath = dialog.SelectedPath;
+            _imageDirectoryModel.DestinationDirectoryPath = dialog.SelectedPath;
 
-            lblImageDestination.Text = _imageDirectoryModel.DestinationPath;
+            lblImageDestination.Text = _imageDirectoryModel.DestinationDirectoryPath;
         }
     }
 
     private void BtmSubmit_Click(object sender, EventArgs e)
     {
-        throw new NotImplementedException("Submit functionality is not implemented yet.");
+        ImageCollector.CollectAndOrganizeImages(_imageDirectoryModel);
     }
 }
