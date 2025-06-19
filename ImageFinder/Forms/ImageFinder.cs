@@ -34,4 +34,9 @@ public partial class ImageFinder : Form
             lblImageDestination.Text = _imageDirectoryModel.DestinationPath;
         }
     }
+
+    private void BtmSubmit_Click(object sender, EventArgs e)
+    {
+        throw new NotImplementedException("Submit functionality is not implemented yet.");
+    }
 }

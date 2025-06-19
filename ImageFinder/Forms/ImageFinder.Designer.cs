@@ -33,6 +33,7 @@
             lblDescription = new Label();
             btnDestination = new Button();
             lblImageDestination = new Label();
+            btmSubmit = new Button();
             SuspendLayout();
             // 
             // btnSourceDirectory
@@ -58,7 +59,7 @@
             // lblDescription
             // 
             lblDescription.AutoSize = true;
-            lblDescription.Location = new Point(35, 23);
+            lblDescription.Location = new Point(35, 30);
             lblDescription.Name = "lblDescription";
             lblDescription.Size = new Size(67, 15);
             lblDescription.TabIndex = 2;
@@ -66,7 +67,7 @@
             // 
             // btnDestination
             // 
-            btnDestination.Location = new Point(35, 112);
+            btnDestination.Location = new Point(35, 102);
             btnDestination.Margin = new Padding(3, 2, 3, 2);
             btnDestination.Name = "btnDestination";
             btnDestination.Size = new Size(82, 22);
@@ -78,17 +79,28 @@
             // lblImageDestination
             // 
             lblImageDestination.AutoSize = true;
-            lblImageDestination.Location = new Point(123, 116);
+            lblImageDestination.Location = new Point(123, 106);
             lblImageDestination.Name = "lblImageDestination";
             lblImageDestination.Size = new Size(67, 15);
             lblImageDestination.TabIndex = 4;
             lblImageDestination.Text = "Destination";
             // 
+            // btmSubmit
+            // 
+            btmSubmit.Location = new Point(35, 152);
+            btmSubmit.Name = "btmSubmit";
+            btmSubmit.Size = new Size(82, 23);
+            btmSubmit.TabIndex = 5;
+            btmSubmit.Text = "Submit";
+            btmSubmit.UseVisualStyleBackColor = true;
+            btmSubmit.Click += BtmSubmit_Click;
+            // 
             // ImageFinder
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(700, 338);
+            ClientSize = new Size(851, 221);
+            Controls.Add(btmSubmit);
             Controls.Add(lblImageDestination);
             Controls.Add(btnDestination);
             Controls.Add(lblDescription);
@@ -108,5 +120,6 @@
         private Label lblDescription;
         private Button btnDestination;
         private Label lblImageDestination;
+        private Button btmSubmit;
     }
 }
