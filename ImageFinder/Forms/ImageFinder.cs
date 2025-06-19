@@ -11,7 +11,7 @@ public partial class ImageFinder : Form
         InitializeComponent();
     }
 
-    private void BtnSelectDirectory_Click(object sender, EventArgs e)
+    private void BtnSourceDirectory_Click(object sender, EventArgs e)
     {
         using FolderBrowserDialog dialog = DirectoryHelpers.GetImageDirectory();
 
@@ -20,6 +20,18 @@ public partial class ImageFinder : Form
             _imageDirectoryModel.DirectoryPath = dialog.SelectedPath;
 
             lblImageDirectory.Text = _imageDirectoryModel.DirectoryPath;
+        }
+    }
+
+    private void BtnDestination_Click(object sender, EventArgs e)
+    {
+        using FolderBrowserDialog dialog = DirectoryHelpers.GetImageDirectory();
+
+        if (dialog.ShowDialog() == DialogResult.OK)
+        {
+            _imageDirectoryModel.DestinationPath = dialog.SelectedPath;
+
+            lblImageDestination.Text = _imageDirectoryModel.DestinationPath;
         }
     }
 }
