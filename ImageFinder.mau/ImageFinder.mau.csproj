@@ -64,6 +64,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\ImageFinder.application\ImageFinder.application.csproj" />
 	  <ProjectReference Include="..\ImageFinder.domain\ImageFinder.domain.csproj" />
 	</ItemGroup>
 
