@@ -1,6 +1,6 @@
-using ImageFinder.app.Collector;
-using ImageFinder.app.Helpers;
-using ImageFinder.app.Models;
+using ImageFinder.domain.Models;
+using ImageFinder.application.Collector;
+using ImageFinder.form.Helpers;
 
 namespace ImageFinder;
 
@@ -38,6 +38,7 @@ public partial class ImageFinder : Form
 
     private void BtmSubmit_Click(object sender, EventArgs e)
     {
-        ImageCollector.CollectAndOrganizeImages(_imageDirectoryModel);
+        throw new NotImplementedException("This method is obsolete and needs to be re-implemented using a cross-platform image processing library.");
+        //ImageCollector.CollectAndOrganizeImages(_imageDirectoryModel);
     }
 }

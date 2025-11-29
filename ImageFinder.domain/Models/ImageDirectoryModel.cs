@@ -1,4 +1,4 @@
-﻿namespace ImageFinder.app.Models;
+﻿namespace ImageFinder.domain.Models;
 
 public class ImageDirectoryModel
 {

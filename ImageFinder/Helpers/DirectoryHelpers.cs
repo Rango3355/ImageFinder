@@ -1,4 +1,4 @@
-﻿namespace ImageFinder.app.Helpers;
+﻿namespace ImageFinder.form.Helpers;
 
 public static class DirectoryHelpers
 {
