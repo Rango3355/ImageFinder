@@ -1,7 +1,7 @@
-﻿using ImageFinder.app.Helpers;
-using FluentAssertions;
+﻿using FluentAssertions;
+using ImageFinder.form.Helpers;
 
-namespace ImageFinder.App.Tests.Helpers;
+namespace ImageFinder.form.tests.Helpers;
 
 public class DirectoryHelpersTests
 {
@@ -17,5 +17,4 @@ public class DirectoryHelpersTests
         dialog.UseDescriptionForTitle.Should().BeTrue();
         dialog.ShowNewFolderButton.Should().BeTrue();
     }
-  
 }
