@@ -23,12 +23,12 @@
                     x:Name="btnGetSourcePath"
                     Text="Get Source" 
                     SemanticProperties.Hint="Allows to choose source folder"
-                    Clicked="OnSourcePathClicked"/>
+                    Clicked="OnSourcePath_Clicked"/>
                 <Button
                     x:Name="btnGetDestinationPath"
                     Text="Get Destination"
                     SemanticProperties.Hint="Allows to choose destination folder"
-                    Clicked="OnDestinationPathClicked"/>
+                    Clicked="OnDestinationPath_Clicked"/>
             </HorizontalStackLayout>
             <Label 
                  x:Name="lblSourcePath"
@@ -42,6 +42,13 @@
                 Style="{StaticResource SubHeadline}"
                 SemanticProperties.HeadingLevel="Level2"
                 IsVisible="False"/>
+            <Button
+                x:Name="btnStartProcess"
+                Text="Process"
+                SemanticProperties.Hint="Starts the image finding process"
+                Clicked="OnProcessImages_Clicked"
+                IsVisible="True"
+                HorizontalOptions="Center"/>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

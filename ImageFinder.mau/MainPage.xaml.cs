@@ -16,12 +16,12 @@ public partial class MainPage : ContentPage
         _imageCollector = imageCollector ?? throw new ArgumentNullException(nameof(imageCollector));
     }
 
-    private async void OnSourcePathClicked(object? sender, EventArgs e)
+    private async void OnSourcePath_Clicked(object? sender, EventArgs e)
     {
         await _directoryHelper.HandlePathSelectionAsync(lblSourcePath, path => _imageDirectoryModel.SourceDirectoryPath = path);
     }
 
-    private async void OnDestinationPathClicked(object? sender, EventArgs e)
+    private async void OnDestinationPath_Clicked(object? sender, EventArgs e)
     {
         await _directoryHelper.HandlePathSelectionAsync(lblDestinationPath, path => _imageDirectoryModel.DestinationDirectoryPath = path);
     }
