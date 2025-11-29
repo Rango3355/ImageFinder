@@ -1,2 +1,102 @@
-# ImageFinder
-App that searches a directory for images and copies them to another directory. Checked for duplicates by file name and excludes these from the list.
+# Image Finder
+
+ImageFinder aims to be a simple, user-friendly tool that scans a source directory for image files and copies them into an organised Year/Month folder structure, using the image’s EXIF “Date Taken” when available.
+It includes a .NET MAUI app as the primary interface, with an optional console version for quick command-line use.
+
+
+## Projects in this solution
+
+- `ImageFinder.mau` — Cross-platform MAUI UI (primary user experience).
+- `ImageFinder.application` — Core application logic: scanning, EXIF parsing and file organisation.
+- `ImageFinder.domain` — Shared domain models used across projects.
+- `ImageFinder.console` — Standalone Console app which was the initial implementation.
+
+### Project relationships
+
+```mermaid
+graph LR
+  ImageFinder.mau --> ImageFinder.application
+  ImageFinder.mau --> ImageFinder.domain
+  ImageFinder.application --> ImageFinder.domain
+  ImageFinder.console 
+```
+### Project Rules & relationships
+
+- `ImageFinder.mau` depends on both `ImageFinder.application` and `ImageFinder.domain`.
+- `ImageFinder.application` only depends on `ImageFinder.domain`.
+- `ImageFinder.domain` has no dependencies on other projects.
+- `ImageFinder.console` is standalone and does not depend on any other projects and will be removed in future iterations.
+- No circular dependencies are allowed.
+- Each project should have a clear responsibility and should not contain logic that belongs to another project.
+- Shared utilities or helper functions should be placed in the `ImageFinder.application` project if they are used by both UI projects.
+- Any new projects added to the solution must adhere to these relationship rules to maintain a clean architecture.
+- Dependencies should be managed via NuGet packages where possible to avoid direct project references that violate these rules.
+- Regular code reviews should be conducted to ensure adherence to these relationship rules and to maintain the integrity of the project structure.
+- Documentation should be updated to reflect any changes in project relationships or dependencies.
+
+
+## Setup
+
+1. Install .NET SDK 8 or 10 depending on the project you want to run (the MAUI project targets .NET 10). Follow Microsoft documentation for MAUI prerequisites for your platform.
+
+2. Restore packages and build the solution:
+
+    ```bash
+    dotnet restore
+    dotnet build
+    ```
+
+3. Add the `MetadataExtractor` package (used to read EXIF metadata in a cross-platform way):
+
+    ```bash
+    dotnet add ImageFinder.application package MetadataExtractor
+    ```
+
+4. (MAUI) Register services in `MauiProgram.cs` and use dependency injection for `IImageCollector`. Example:
+
+    ```csharp
+    builder.Services.AddSingleton<IImageCollector, ImageCollector>();
+    ```
+
+## Usage
+
+MAUI app (recommended):
+
+- Run the `ImageFinder.mau` project on your target platform.
+- Use the UI to select a source directory and a destination directory.
+- Start processing. Images will be copied into `Destination/Year/Month` folders based on EXIF "Date Taken".
+
+> Note: this is still a work in progress. The UI may be basic and some features may be missing.
+
+Console app:
+
+- Run the `ImageFinder.console` project for quick, command-line sorting.
+- The Command Line Interface (CLI) will then prompt for source and destination directories one at a time before processing the request.
+
+Behaviour notes:
+
+- EXIF timestamps typically have no timezone information (DateTime.Kind will often be `Unspecified`). Decide whether to treat them as local time or convert to UTC in your environment.
+- Images without EXIF or with unparseable EXIF dates are currently skipped. Consider implementing a fallback (e.g. file-system timestamps) or moving those files to an `unsorted` folder.
+- Duplicate file names are avoided by generating a unique suffix when the destination file already exists.
+
+## Contributing
+
+Contributions, bug reports and suggestions are welcome. 
+
+If you plan to make changes, please fork the repository and create a pull request with a clear description of your changes.
+
+Please also try to follow the existing project relationship [diagram](#project-relationships) and [rules](#project-rules--relationships) to maintain a clean architecture.
+
+## License
+
+This project is licensed under the MIT License. See the LICENSE file for details.   
+
+## Testing
+
+Unit tests have currently been removed because they were tightly coupled to the console implementation. Future plans include reintroducing tests that focus on the core application logic in `ImageFinder.application`, ensuring better separation of concerns and testability.
+
+This will likely be done in the next few iterations.
+
+## Contact
+
+For questions or feature requests, please open an issue or discussion on the GitHub repository.
