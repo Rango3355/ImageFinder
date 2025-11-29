@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageFinder.domain", "Image
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageFinder.application", "ImageFinder.application\ImageFinder.application.csproj", "{984F0EFE-8F4C-4D01-BDB4-D20972918548}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageFinder.mau", "ImageFinder.mau\ImageFinder.mau.csproj", "{5E927E4D-07FE-4DFF-97B1-ADE67B4E3D3C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{984F0EFE-8F4C-4D01-BDB4-D20972918548}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{984F0EFE-8F4C-4D01-BDB4-D20972918548}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{984F0EFE-8F4C-4D01-BDB4-D20972918548}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E927E4D-07FE-4DFF-97B1-ADE67B4E3D3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E927E4D-07FE-4DFF-97B1-ADE67B4E3D3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E927E4D-07FE-4DFF-97B1-ADE67B4E3D3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E927E4D-07FE-4DFF-97B1-ADE67B4E3D3C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
