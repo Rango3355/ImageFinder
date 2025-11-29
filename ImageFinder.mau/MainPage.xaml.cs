@@ -1,23 +1,25 @@
-﻿namespace ImageFinder.mau;
+﻿using ImageFinder.domain.Models;
+using ImageFinder.mau.Helper;
+
+namespace ImageFinder.mau;
 
 public partial class MainPage : ContentPage
 {
-    int count = 0;
+    private readonly ImageDirectoryModel _imageDirectoryModel = new();
+    private readonly DirectoryHelper _directoryHelper = new();
 
     public MainPage()
     {
         InitializeComponent();
     }
 
-    private void OnCounterClicked(object? sender, EventArgs e)
+    private async void OnSourcePathClicked(object? sender, EventArgs e)
     {
-        count++;
+        await _directoryHelper.HandlePathSelectionAsync(lblSourcePath, path => _imageDirectoryModel.SourceDirectoryPath = path);
+    }
 
-        if (count == 1)
-            CounterBtn.Text = $"Clicked {count} time";
-        else
-            CounterBtn.Text = $"Clicked {count} times";
-
-        SemanticScreenReader.Announce(CounterBtn.Text);
+    private async void OnDestinationPathClicked(object? sender, EventArgs e)
+    {
+        await _directoryHelper.HandlePathSelectionAsync(lblDestinationPath, path => _imageDirectoryModel.DestinationDirectoryPath = path);
     }
 }
