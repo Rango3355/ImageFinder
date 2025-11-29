@@ -1,77 +1,68 @@
 ﻿using ImageFinder.domain.Models;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.Globalization;
+using MetadataExtractor;
+using MetadataExtractor.Formats.Exif;
 
 namespace ImageFinder.application.Collector;
-public class ImageCollector
+public class ImageCollector : IImageCollector
 {
-    [Obsolete("This method uses System.Drawing which is not cross-platform. Consider using a cross-platform library for image processing.", true)]
-    public static void CollectAndOrganizeImages(ImageDirectoryModel imageDirectoryModel)
+    public async Task CollectAndOrganiseImagesAsync(ImageDirectoryModel imageDirectoryModel)
     {
+        foreach (string filePath in System.IO.Directory.GetFiles(imageDirectoryModel.SourceDirectoryPath, "*.*", SearchOption.AllDirectories))
+        {
+            if (!Array.Exists(ImageModel.SupportedExtensions, ext => filePath.EndsWith(ext, StringComparison.OrdinalIgnoreCase)))
+                continue;
 
-       
-        //foreach (string filePath in Directory.GetFiles(imageDirectoryModel.SourceDirectoryPath, "*.*", SearchOption.AllDirectories))
-        //{
-        //    if (!Array.Exists(ImageModel.SupportedExtensions, ext => filePath.EndsWith(ext, StringComparison.OrdinalIgnoreCase)))
-        //        continue;
+            try
+            {
+                IReadOnlyList<MetadataExtractor.Directory> directories = ImageMetadataReader.ReadMetadata(filePath);
 
-        //    try
-        //    {
-        //        DateTime dateTaken;
+                if (!TryGetExifDateTaken(directories, out DateTime dateTaken))
+                {
+                    Console.WriteLine($"No Date Taken found for {filePath}. Skipping.");
+                    continue;
+                }
 
-        //        using Image image = Image.FromFile(filePath);
+                string year = dateTaken.Year.ToString();
+                string month = dateTaken.ToString("MMMM", CultureInfo.InvariantCulture);
 
-        //        const int dateTakenPropertyId = 0x9003;
+                string destDir = Path.Combine(imageDirectoryModel.DestinationDirectoryPath, year, month);
+                System.IO.Directory.CreateDirectory(destDir);
 
-        //        if (image.PropertyIdList.Contains(dateTakenPropertyId))
-        //        {
-        //            PropertyItem? propItem = image.GetPropertyItem(dateTakenPropertyId);
+                string destFilePath = Path.Combine(destDir, Path.GetFileName(filePath));
 
-        //            ArgumentNullException.ThrowIfNull(propItem?.Value);
+                if (File.Exists(destFilePath))
+                {
+                    string uniqueName = string.Concat(Path.GetFileNameWithoutExtension(filePath), "_", Guid.NewGuid().ToString().AsSpan(0, 8), Path.GetExtension(filePath));
+                    destFilePath = Path.Combine(destDir, uniqueName);
+                }
 
-        //            string dateTakenStr = System.Text.Encoding.ASCII.GetString(propItem.Value).Trim('\0');
+                File.Copy(filePath, destFilePath);
 
-        //            if (!DateTime.TryParseExact(dateTakenStr, "yyyy:MM:dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTaken))
-        //            {
-        //                //TODO: Log this message instead of writing to console
-        //                //TODO: Move to a unsorted directory
-        //                Console.WriteLine($"Could not parse date for {filePath}. Skipping.");
-        //                continue;
-        //            }
-        //        }
-        //        else
-        //        {
-        //            //TODO: Log this message instead of writing to console
-        //            //TODO: Move to a unsorted directory
-        //            Console.WriteLine($"No Date Taken found for {filePath}. Skipping.");
-        //            continue;
-        //        }
+                //TODO: Log this message instead of writing to console
+                Console.WriteLine($"Copied: {filePath} → {destFilePath}");
+            }
+            catch (Exception ex)
+            {
+                //TODO: Log this message instead of writing to console
+                Console.WriteLine($"Error processing {filePath}: {ex.Message}");
+            }
+        }
+    }
 
-        //        string year = dateTaken.Year.ToString();
-        //        string month = dateTaken.ToString("MMMM", CultureInfo.InvariantCulture);
+    private static bool TryGetExifDateTaken(IReadOnlyList<MetadataExtractor.Directory> directories, out DateTime dateTaken)
+    {
+        dateTaken = default;
 
-        //        string destDir = Path.Combine(imageDirectoryModel.DestinationDirectoryPath, year, month);
-        //        Directory.CreateDirectory(destDir);
+        ExifSubIfdDirectory? subIfdDirectory = directories.OfType<ExifSubIfdDirectory>().FirstOrDefault();
 
-        //        string destFilePath = Path.Combine(destDir, Path.GetFileName(filePath));
+        if (subIfdDirectory != null && subIfdDirectory.TryGetDateTime(ExifDirectoryBase.TagDateTimeOriginal, out dateTaken))
+            return true;
 
-        //        if (File.Exists(destFilePath))
-        //        {
-        //            string uniqueName = string.Concat(Path.GetFileNameWithoutExtension(filePath), "_", Guid.NewGuid().ToString().AsSpan(0, 8), Path.GetExtension(filePath));
-        //            destFilePath = Path.Combine(destDir, uniqueName);
-        //        }
+        ExifIfd0Directory? ifd0 = directories.OfType<ExifIfd0Directory>().FirstOrDefault();
+        if (ifd0 != null && ifd0.TryGetDateTime(ExifDirectoryBase.TagDateTime, out dateTaken))
+            return true;
 
-        //        File.Copy(filePath, destFilePath);
-
-        //        //TODO: Log this message instead of writing to console
-        //        Console.WriteLine($"Copied: {filePath} → {destFilePath}");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        //TODO: Log this message instead of writing to console
-        //        Console.WriteLine($"Error processing {filePath}: {ex.Message}");
-        //    }
-        //}
+        return false;
     }
 }
