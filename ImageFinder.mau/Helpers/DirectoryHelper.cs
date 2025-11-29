@@ -1,7 +1,7 @@
 ﻿
 using CommunityToolkit.Maui.Storage;
 
-namespace ImageFinder.mau.Helper;
+namespace ImageFinder.mau.Helpers;
 
 public class DirectoryHelper
 {

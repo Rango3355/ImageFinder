@@ -1,6 +1,6 @@
-﻿using ImageFinder.domain.Models;
-using ImageFinder.application.Collector;
-using ImageFinder.mau.Helper;
+﻿using ImageFinder.application.Collector;
+using ImageFinder.domain.Models;
+using ImageFinder.mau.Helpers;
 
 namespace ImageFinder.mau;
 
@@ -10,6 +10,11 @@ public partial class MainPage : ContentPage
     private readonly DirectoryHelper _directoryHelper = new();
     private readonly IImageCollector _imageCollector;
 
+    public MainPage()
+    {
+        InitializeComponent();
+        _imageCollector = ServiceHelper.GetService<IImageCollector>();
+    }
     public MainPage(IImageCollector imageCollector)
     {
         InitializeComponent();
@@ -30,7 +35,7 @@ public partial class MainPage : ContentPage
     {
         try
         {
-            if(_imageDirectoryModel.SourceDirectoryPath == null || _imageDirectoryModel.DestinationDirectoryPath == null)
+            if (_imageDirectoryModel.SourceDirectoryPath == null || _imageDirectoryModel.DestinationDirectoryPath == null)
             {
                 throw new NullReferenceException("Please select both source and destination directories.");
             }
