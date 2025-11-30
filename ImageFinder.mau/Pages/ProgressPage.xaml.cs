@@ -9,4 +9,9 @@ public partial class ProgressPage : ContentPage
         InitializeComponent();
         BindingContext = vm;
     }
+
+    private async void OnStartOver_Clicked(object? sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync("..");
+    }
 }
