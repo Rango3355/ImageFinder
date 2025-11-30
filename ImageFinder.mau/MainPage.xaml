@@ -7,11 +7,18 @@
     <ScrollView>
         <VerticalStackLayout Padding="24" Spacing="24">
 
+            <Image
+                Source="duck_image_search.png"
+                HeightRequest="150"
+                Aspect="AspectFit"
+                HorizontalOptions="Center" />
+            
             <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
                 <Label
-                    Text="ImageFinder"
+                    Text="Image Finder"
                     FontSize="26"
-                    FontAttributes="Bold" />
+                    FontAttributes="Bold" 
+                    HorizontalOptions="Center"/>
 
                 <Label
                     Text="Organise your photos into Year / Month folders"
@@ -19,12 +26,6 @@
                     Opacity="0.7"
                     HorizontalOptions="Center" />
             </VerticalStackLayout>
-
-            <Image
-                Source="dotnet_bot.png"
-                HeightRequest="150"
-                Aspect="AspectFit"
-                HorizontalOptions="Center" />
 
             <Border
                 Stroke="{DynamicResource Gray500}"
