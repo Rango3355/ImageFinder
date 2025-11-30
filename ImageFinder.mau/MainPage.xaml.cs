@@ -1,24 +1,23 @@
-﻿using ImageFinder.application.Collector;
-using ImageFinder.domain.Models;
+﻿using ImageFinder.domain.Models;
 using ImageFinder.mau.Helpers;
+using ImageFinder.mau.Pages;
 
 namespace ImageFinder.mau;
 
 public partial class MainPage : ContentPage
 {
-    private readonly ImageDirectoryModel _imageDirectoryModel = new();
+    private readonly ImageDirectoryModel _imageDirectoryModel;
     private readonly DirectoryHelper _directoryHelper = new();
-    private readonly IImageCollector _imageCollector;
 
     public MainPage()
     {
         InitializeComponent();
-        _imageCollector = ServiceHelper.GetService<IImageCollector>();
+        _imageDirectoryModel = ServiceHelper.GetService<ImageDirectoryModel>();
     }
-    public MainPage(IImageCollector imageCollector)
+    public MainPage(ImageDirectoryModel imageDirectoryModel)
     {
         InitializeComponent();
-        _imageCollector = imageCollector ?? throw new ArgumentNullException(nameof(imageCollector));
+        _imageDirectoryModel = imageDirectoryModel ?? throw new ArgumentNullException(nameof(imageDirectoryModel));
     }
 
     private async void OnSourcePath_Clicked(object? sender, EventArgs e)
@@ -35,23 +34,14 @@ public partial class MainPage : ContentPage
 
     private async void OnProcessImages_Clicked(object? sender, EventArgs e)
     {
-        try
+        if (string.IsNullOrEmpty(_imageDirectoryModel.SourceDirectoryPath) ||
+             string.IsNullOrEmpty(_imageDirectoryModel.DestinationDirectoryPath))
         {
-            if (_imageDirectoryModel.SourceDirectoryPath == null || _imageDirectoryModel.DestinationDirectoryPath == null)
-            {
-                throw new NullReferenceException("Please select both source and destination directories.");
-            }
+            await DisplayAlertAsync("Input Error", "Please select both source and destination directories.", "OK");
+            return;
+        }
 
-            await _imageCollector.CollectAndOrganiseImagesAsync(_imageDirectoryModel);
-        }
-        catch (NullReferenceException ex)
-        {
-            await DisplayAlertAsync("Input Error", ex.Message, "OK");
-        }
-        catch (Exception)
-        {
-            await DisplayAlertAsync("Error", "Unexpected error ", "OK");
-        }
+        await Shell.Current.GoToAsync(nameof(ProgressPage));
     }
 
     private Task EnableControls(Label targetLabel, Button? targetButton = null)
