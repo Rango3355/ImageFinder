@@ -11,43 +11,39 @@
                 HeightRequest="185"
                 Aspect="AspectFit"
                 SemanticProperties.Description="dot net bot in a submarine number ten" />
-            <Label
-                Text="ImageFinder"
-                Style="{StaticResource Headline}"
-                SemanticProperties.HeadingLevel="Level1" />
-            <HorizontalStackLayout
-                Spacing="10"
-                VerticalOptions="Center"
-                HorizontalOptions="Center">
-                <Button
-                    x:Name="btnGetSourcePath"
-                    Text="Get Source" 
-                    SemanticProperties.Hint="Allows to choose source folder"
-                    Clicked="OnSourcePath_Clicked"/>
-                <Button
-                    x:Name="btnGetDestinationPath"
-                    Text="Get Destination"
-                    SemanticProperties.Hint="Allows to choose destination folder"
-                    Clicked="OnDestinationPath_Clicked"/>
-            </HorizontalStackLayout>
+            <Button
+                x:Name="btnGetSourcePath"
+                Text="Get Source" 
+                SemanticProperties.Hint="Allows to choose source folder"
+                Clicked="OnSourcePath_Clicked"
+                HorizontalOptions="Center"/>
             <Label 
-                 x:Name="lblSourcePath"
-                 Text=""
-                 Style="{StaticResource SubHeadline}"
-                 SemanticProperties.HeadingLevel="Level2"
-                 IsVisible="False"/>
+                x:Name="lblSourcePath"
+                Text=""
+                Style="{StaticResource SubHeadline}"
+                SemanticProperties.HeadingLevel="Level2"
+                IsVisible="False"
+                HorizontalOptions="Center"/>
+            <Button
+                x:Name="btnGetDestinationPath"
+                Text="Get Destination"
+                SemanticProperties.Hint="Allows to choose destination folder"
+                Clicked="OnDestinationPath_Clicked"
+                HorizontalOptions="Center"
+                IsVisible="False"/>
             <Label
                 x:Name="lblDestinationPath"
                 Text=""
                 Style="{StaticResource SubHeadline}"
                 SemanticProperties.HeadingLevel="Level2"
-                IsVisible="False"/>
+                IsVisible="False"
+                HorizontalOptions="Center"/>
             <Button
                 x:Name="btnStartProcess"
                 Text="Process"
                 SemanticProperties.Hint="Starts the image finding process"
                 Clicked="OnProcessImages_Clicked"
-                IsVisible="True"
+                IsVisible="False"
                 HorizontalOptions="Center"/>
         </VerticalStackLayout>
     </ScrollView>

@@ -17,7 +17,6 @@ public class DirectoryHelper
         string path = result.Folder?.Path ?? string.Empty;
         targetLabel.Text = path;
         setModelPath(path);
-        targetLabel.IsVisible = true;
 
         return true;
     }
