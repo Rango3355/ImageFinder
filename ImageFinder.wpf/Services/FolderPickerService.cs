@@ -1,5 +1,7 @@
 namespace ImageFinder.wpf.Services;
 
+using System.Windows.Forms;
+
 public class FolderPickerService : IFolderPicker
 {
     public string? PickFolder(string description)
