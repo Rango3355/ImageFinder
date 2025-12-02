@@ -109,7 +109,7 @@ public partial class MainWindowViewModel : ObservableObject
                 DestinationPath!,
                 progress);
             Progress = 1;
-            StatusMessage = "Done! Images have been organised into Year/Month folders.";
+            StatusMessage = $"All done!";
         }
         catch (Exception ex)
         {
