@@ -7,13 +7,31 @@ namespace ImageFinder.application.Collector;
 
 public class ImageCollector : IImageCollector
 {
-    public async Task CollectAndOrganiseImagesAsync(ImageDirectoryModel imageDirectoryModel)
+    public async Task CollectAndOrganiseImagesAsync(
+        ImageDirectoryModel imageDirectoryModel,
+        IProgress<double>? progress = null,
+        CancellationToken cancellationToken = default
+        )
     {
         ArgumentNullException.ThrowIfNull(imageDirectoryModel);
         ArgumentException.ThrowIfNullOrEmpty(imageDirectoryModel.SourceDirectoryPath);
         ArgumentException.ThrowIfNullOrEmpty(imageDirectoryModel.DestinationDirectoryPath);
 
-        IEnumerable<string> files = System.IO.Directory.EnumerateFiles(imageDirectoryModel.SourceDirectoryPath, "*.*", SearchOption.AllDirectories);
+        List<string> files = [.. System.IO.Directory
+            .EnumerateFiles(imageDirectoryModel.SourceDirectoryPath, "*.*", SearchOption.AllDirectories)
+            .Where(filePath =>
+                Array.Exists(ImageModel.SupportedExtensions,
+                    ext => filePath.EndsWith(ext, StringComparison.OrdinalIgnoreCase)))];
+
+        int totalFiles = files.Count;
+
+        if (totalFiles == 0)
+        {
+            progress?.Report(1.0);
+            return;
+        }
+
+        int completed = 0;
 
         int maxConcurrency = Math.Max(1, Environment.ProcessorCount * 2); // IO-bound: allow a bit more concurrency
         using SemaphoreSlim semaphore = new(maxConcurrency);
@@ -22,23 +40,38 @@ public class ImageCollector : IImageCollector
 
         foreach (string filePath in files)
         {
-            // quick filter before queuing work
-            if (!Array.Exists(ImageModel.SupportedExtensions, ext => filePath.EndsWith(ext, StringComparison.OrdinalIgnoreCase)))
-                continue;
-
-            workers.Add(ProcessFileAsync(filePath, imageDirectoryModel, semaphore));
+            workers.Add(ProcessFileAsync(
+                filePath,
+                imageDirectoryModel,
+                semaphore,
+                onCompleted: () =>
+                {
+                    int done = Interlocked.Increment(ref completed);
+                    double value = (double)done / totalFiles;
+                    progress?.Report(value);
+                },
+                cancellationToken));
         }
 
         await Task.WhenAll(workers).ConfigureAwait(false);
     }
 
-    private async Task ProcessFileAsync(string filePath, ImageDirectoryModel imageDirectoryModel, SemaphoreSlim semaphore)
+    private async Task ProcessFileAsync(
+        string filePath,
+        ImageDirectoryModel imageDirectoryModel,
+        SemaphoreSlim semaphore,
+        Action onCompleted,
+        CancellationToken cancellationToken)
     {
-        await semaphore.WaitAsync().ConfigureAwait(false);
+        await semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
 
         try
         {
-            IReadOnlyList<MetadataExtractor.Directory> directories = await Task.Run(() => ImageMetadataReader.ReadMetadata(filePath)).ConfigureAwait(false);
+            cancellationToken.ThrowIfCancellationRequested();
+
+            IReadOnlyList<MetadataExtractor.Directory> directories =
+                await Task.Run(() => ImageMetadataReader.ReadMetadata(filePath), cancellationToken)
+                    .ConfigureAwait(false);
 
             if (!TryGetExifDateTaken(directories, out DateTime dateTaken))
             {
@@ -55,16 +88,44 @@ public class ImageCollector : IImageCollector
             string destFilePath = Path.Combine(destDir, Path.GetFileName(filePath));
             if (File.Exists(destFilePath))
             {
-                string uniqueName = string.Concat(Path.GetFileNameWithoutExtension(filePath), "_", Guid.NewGuid().ToString().AsSpan(0, 8), Path.GetExtension(filePath));
+                string uniqueName = string.Concat(
+                    Path.GetFileNameWithoutExtension(filePath),
+                    "_",
+                    Guid.NewGuid()
+                        .ToString()
+                        .AsSpan(0, 8),
+                    Path.GetExtension(filePath));
+
                 destFilePath = Path.Combine(destDir, uniqueName);
             }
 
             const int bufferSize = 81920;
-            await using FileStream sourceStream = new(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize, FileOptions.Asynchronous);
-            await using FileStream destinationStream = new(destFilePath, FileMode.CreateNew, FileAccess.Write, FileShare.None, bufferSize, FileOptions.Asynchronous);
-            await sourceStream.CopyToAsync(destinationStream).ConfigureAwait(false);
+
+            await using FileStream sourceStream = new(
+                filePath,
+                FileMode.Open,
+                FileAccess.Read,
+                FileShare.Read,
+                bufferSize,
+                FileOptions.Asynchronous);
+
+            await using FileStream destinationStream = new(
+                destFilePath,
+                FileMode.CreateNew,
+                FileAccess.Write,
+                FileShare.None,
+                bufferSize,
+                FileOptions.Asynchronous);
+
+            await sourceStream.CopyToAsync(destinationStream, cancellationToken)
+                .ConfigureAwait(false);
 
             Console.WriteLine($"Copied: {filePath} → {destFilePath}");
+        }
+        catch (OperationCanceledException)
+        {
+            Console.WriteLine("Operation cancelled.");
+            throw;
         }
         catch (Exception ex)
         {
@@ -72,6 +133,7 @@ public class ImageCollector : IImageCollector
         }
         finally
         {
+            onCompleted();
             semaphore.Release();
         }
     }
