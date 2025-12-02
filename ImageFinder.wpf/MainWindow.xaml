@@ -46,9 +46,7 @@
 
                         <Button Content="📁  Select source folder"
                                 Command="{Binding BrowseSourceCommand}"
-                                IsEnabled="{Binding IsNotBusy}"
-                                Background="#26354F"
-                                Foreground="{StaticResource TextPrimaryBrush}" />
+                                IsEnabled="{Binding IsNotBusy}"/>
 
                         <TextBlock Text="{Binding SourcePath, TargetNullValue='Not selected'}"
                                    Margin="0 8 0 0"
