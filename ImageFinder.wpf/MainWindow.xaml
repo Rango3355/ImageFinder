@@ -1,0 +1,129 @@
+<Window x:Class="ImageFinder.wpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Image Finder"
+        Height="640"
+        Width="980"
+        MinHeight="520"
+        MinWidth="860">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="24" MaxWidth="1100">
+            <StackPanel Margin="0 0 0 16">
+                <TextBlock Text="Image Finder"
+                           FontSize="28"
+                           FontWeight="Bold"
+                           Margin="0 0 0 4" />
+                <TextBlock Text="Organise your photos by Year / Month"
+                           Foreground="{StaticResource TextMutedBrush}" />
+            </StackPanel>
+
+            <Border Style="{StaticResource CardBorder}" Margin="0 0 0 14">
+                <StackPanel>
+                    <TextBlock Text="Quick tips"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Margin="0 0 0 6" />
+                    <TextBlock Text="Pick a source folder with photos and the destination, hit start and watch the magic happen."
+                               Foreground="{StaticResource TextMutedBrush}" />
+                </StackPanel>
+            </Border>
+
+            <Grid Margin="0 0 0 14">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Border Style="{StaticResource CardBorder}" Margin="0 0 8 0">
+                    <StackPanel>
+                        <TextBlock Text="Step 1 • Source"
+                                   FontSize="18"
+                                   FontWeight="SemiBold"
+                                   Margin="0 0 4 0" />
+                        <TextBlock Text="Choose where your photos currently live."
+                                   Foreground="{StaticResource TextMutedBrush}"
+                                   Margin="0 0 6 0" />
+
+                        <Button Content="📁  Select source folder"
+                                Command="{Binding BrowseSourceCommand}"
+                                IsEnabled="{Binding IsNotBusy}"
+                                Background="#26354F"
+                                Foreground="{StaticResource TextPrimaryBrush}" />
+
+                        <TextBlock Text="{Binding SourcePath, TargetNullValue='Not selected'}"
+                                   Margin="0 8 0 0"
+                                   Foreground="{StaticResource TextMutedBrush}"
+                                   TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="1" Style="{StaticResource CardBorder}" Margin="8 0 0 0">
+                    <StackPanel>
+                        <TextBlock Text="Step 2 • Destination"
+                                   FontSize="18"
+                                   FontWeight="SemiBold"
+                                   Margin="0 0 4 0" />
+                        <TextBlock Text="Pick where sorted images should be created."
+                                   Foreground="{StaticResource TextMutedBrush}"
+                                   Margin="0 0 6 0" />
+
+                        <Button Content="📂  Select destination folder"
+                                Command="{Binding BrowseDestinationCommand}"
+                                IsEnabled="{Binding CanPickDestination}" />
+
+                        <TextBlock Text="{Binding DestinationPath, TargetNullValue='Not selected'}"
+                                   Margin="0 8 0 0"
+                                   Foreground="{StaticResource TextMutedBrush}"
+                                   TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <Border Style="{StaticResource CardBorder}" Margin="0 0 0 14">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock Text="Progress"
+                                   FontSize="18"
+                                   FontWeight="SemiBold"
+                                   Margin="0 0 6 0" />
+                        <TextBlock Text="{Binding StatusMessage}"
+                                   Foreground="{StaticResource TextMutedBrush}"
+                                   Margin="0 0 10 6" />
+
+                        <Border Background="#141E33" CornerRadius="8" Padding="12" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                            <StackPanel>
+                                <ProgressBar Minimum="0"
+                                             Maximum="1"
+                                             Value="{Binding Progress}"
+                                             Height="10"
+                                             Foreground="{StaticResource AccentBrush}"
+                                             Background="#0E1526" />
+                                <TextBlock Text="{Binding ProgressPercent}"
+                                           HorizontalAlignment="Right"
+                                           Margin="0 6 0 0"
+                                           Foreground="{StaticResource TextMutedBrush}" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <Button Content="▶  Start"
+                                Command="{Binding StartProcessingCommand}"
+                                IsEnabled="{Binding CanStart}"
+                                Width="140" />
+                        <Button Content="↺  Start over"
+                                Command="{Binding ResetCommand}"
+                                Background="#1F2937"
+                                Foreground="{StaticResource TextPrimaryBrush}"
+                                Margin="0 8 0 0"
+                                Width="140" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Window>
