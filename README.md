@@ -25,6 +25,7 @@ graph LR
 - Images are grouped into `Destination/{Year}/{Month}` based on EXIF "Date Taken".
 - Files with duplicate names gain a short GUID suffix to avoid overwriting.
 - Files without EXIF dates (or with invalid EXIF) are skipped.
+- EXIF metadata is preserved during copy (including location/date if present).
 - Progress is reported via `IProgress<double>` and surfaced in the WPF UI.
 
 ## Setup
