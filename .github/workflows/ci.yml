@@ -30,9 +30,11 @@ jobs:
         id: detect-tests  
         shell: pwsh
         run: |
-          $hasTests = Get-ChildItem -Recurse -Filter *.csproj | 
-            Select-String "Microsoft.NET.Test.Sdk" -Quiet
-          echo "hasTests=$hasTests" >> $env:GITHUB_OUTPUT
+          $matches = Get-ChildItem -Recurse -Filter *.csproj |
+            Select-String -Pattern "Microsoft.NET.Test.Sdk" -SimpleMatch -List
+
+          $hasTests = ($null -ne $matches)
+          "hasTests=$($hasTests.ToString().ToLower())" >> $env:GITHUB_OUTPUT
 
       - name: Test
         if: steps.detect-tests.outputs.hasTests == 'true'
