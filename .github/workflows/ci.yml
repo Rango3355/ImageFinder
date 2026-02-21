@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  pull_request:
+    branches: ["main"]
+  push:
+    branches: ["main"]
+
+jobs:
+  build-and-test:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+          include-prerelease: true
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore -c Release -warnaserror
+      
+      - name: Detect test projects
+        id: detect-tests  
+        shell: pwsh
+        run: |
+          $matches = Get-ChildItem -Recurse -Filter *.csproj |
+            Select-String -Pattern "Microsoft.NET.Test.Sdk" -SimpleMatch -List
+
+          $hasTests = ($null -ne $matches)
+          "hasTests=$($hasTests.ToString().ToLower())" >> $env:GITHUB_OUTPUT
+
+      - name: Test
+        if: steps.detect-tests.outputs.hasTests == 'true'
+        run: dotnet test --no-build -c Release
