@@ -25,6 +25,15 @@ jobs:
 
       - name: Build
         run: dotnet build --no-restore -c Release -warnaserror
+      
+      - name: Detect test projects
+        id: detect-tests  
+        shell: pwsh
+        run: |
+          $hasTests = Get-ChildItem -Recurse -Filter *.csproj | 
+            Select-String "Microsoft.NET.Test.Sdk" -Quiet
+          echo "hasTests=$hasTests" >> $env:GITHUB_OUTPUT
 
       - name: Test
+        if: steps.detect-tests.outputs.hasTests == 'true'
         run: dotnet test --no-build -c Release
