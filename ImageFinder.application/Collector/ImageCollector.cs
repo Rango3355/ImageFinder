@@ -129,12 +129,11 @@ public class ImageCollector : IImageCollector
         cancellationToken.ThrowIfCancellationRequested();
 
         IReadOnlyList<MetadataExtractor.Directory> directories =
-      await Task.Run(() => ImageMetadataReader.ReadMetadata(filePath), cancellationToken)
+        await Task.Run(() => ImageMetadataReader.ReadMetadata(filePath), cancellationToken)
           .ConfigureAwait(false);
 
         if (!TryGetExifDateTaken(directories, out DateTime dateTaken))
         {
-            Console.WriteLine($"No Date Taken found for {filePath}. Skipping.");
             return null;
         }
 
