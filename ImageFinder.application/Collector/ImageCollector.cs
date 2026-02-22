@@ -18,7 +18,7 @@ public class ImageCollector : IImageCollector
         ArgumentException.ThrowIfNullOrEmpty(imageDirectoryModel.SourceDirectoryPath);
         ArgumentException.ThrowIfNullOrEmpty(imageDirectoryModel.DestinationDirectoryPath);
 
-        List<string> files = GetSupportedImageFiles(imageDirectoryModel.SourceDirectoryPath).ToList();
+        List<string> files = [.. GetSupportedImageFiles(imageDirectoryModel.SourceDirectoryPath)];
 
         int totalFiles = files.Count;
         if (totalFiles == 0)
@@ -34,7 +34,10 @@ public class ImageCollector : IImageCollector
         List<Task> workers = [];
         foreach (string filePath in files)
         {
+            DateTime? dateTaken = await GetDateTakenAsync(filePath, cancellationToken);
+
             workers.Add(ProcessFileAsync(
+                dateTaken,
                 filePath,
                 imageDirectoryModel,
                 semaphore,
@@ -50,7 +53,8 @@ public class ImageCollector : IImageCollector
         await Task.WhenAll(workers).ConfigureAwait(false);
     }
 
-    private async Task ProcessFileAsync(
+    private static async Task ProcessFileAsync(
+        DateTime? dateTaken,
         string filePath,
         ImageDirectoryModel imageDirectoryModel,
         SemaphoreSlim semaphore,
@@ -63,42 +67,10 @@ public class ImageCollector : IImageCollector
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            IReadOnlyList<MetadataExtractor.Directory> directories =
-                await Task.Run(() => ImageMetadataReader.ReadMetadata(filePath), cancellationToken)
-                    .ConfigureAwait(false);
+            string? year = dateTaken?.Year.ToString();
+            string? month = dateTaken?.ToString("MMMM", CultureInfo.InvariantCulture);
 
-            if (!TryGetExifDateTaken(directories, out DateTime dateTaken))
-            {
-                Console.WriteLine($"No Date Taken found for {filePath}. Skipping.");
-                return;
-            }
-
-            string year = dateTaken.Year.ToString();
-            string month = dateTaken.ToString("MMMM", CultureInfo.InvariantCulture);
-
-            string destinationDirectory = Path.Combine(imageDirectoryModel.DestinationDirectoryPath, year, month);
-            System.IO.Directory.CreateDirectory(destinationDirectory);
-
-            string destinationFilePath = BuildDestinationFilePath(filePath, destinationDirectory);
-
-            await using FileStream sourceStream = new(
-                filePath,
-                FileMode.Open,
-                FileAccess.Read,
-                FileShare.Read,
-                FileCopyBufferSize,
-                FileOptions.Asynchronous);
-
-            await using FileStream destinationStream = new(
-                destinationFilePath,
-                FileMode.CreateNew,
-                FileAccess.Write,
-                FileShare.None,
-                FileCopyBufferSize,
-                FileOptions.Asynchronous);
-
-            await sourceStream.CopyToAsync(destinationStream, cancellationToken)
-                .ConfigureAwait(false);
+            string destinationFilePath = await MoveImagesAsync(imageDirectoryModel, filePath, cancellationToken, year, month);
 
             Console.WriteLine($"Copied: {filePath} -> {destinationFilePath}");
         }
@@ -116,6 +88,59 @@ public class ImageCollector : IImageCollector
             onCompleted();
             semaphore.Release();
         }
+    }
+
+    private async static Task<string> MoveImagesAsync(ImageDirectoryModel imageDirectoryModel, string filePath, CancellationToken cancellationToken, string? year = null, string? month = null)
+    {
+        string destinationDirectory = (year, month) switch
+        {
+            (null, null) => Path.Combine(imageDirectoryModel.DestinationDirectoryPath, "Unsorted"),
+            (not null, null) => Path.Combine(imageDirectoryModel.DestinationDirectoryPath, year, "Unsorted"),
+            (null, not null) => Path.Combine(imageDirectoryModel.DestinationDirectoryPath, "Unsorted", month),
+            _ => Path.Combine(imageDirectoryModel.DestinationDirectoryPath, year, month),
+        };
+
+        System.IO.Directory.CreateDirectory(destinationDirectory);
+
+        string destinationFilePath = BuildDestinationFilePath(filePath, destinationDirectory);
+
+        await using FileStream sourceStream = new(
+                        filePath,
+                        FileMode.Open,
+                        FileAccess.Read,
+                        FileShare.Read,
+                        FileCopyBufferSize,
+                        FileOptions.Asynchronous);
+
+        await using FileStream destinationStream = new(
+            destinationFilePath,
+            FileMode.CreateNew,
+            FileAccess.Write,
+            FileShare.None,
+            FileCopyBufferSize,
+            FileOptions.Asynchronous);
+
+        await sourceStream.CopyToAsync(destinationStream, cancellationToken)
+            .ConfigureAwait(false);
+
+        return destinationFilePath;
+    }
+
+    private static async Task<DateTime?> GetDateTakenAsync(string filePath, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        IReadOnlyList<MetadataExtractor.Directory> directories =
+      await Task.Run(() => ImageMetadataReader.ReadMetadata(filePath), cancellationToken)
+          .ConfigureAwait(false);
+
+        if (!TryGetExifDateTaken(directories, out DateTime dateTaken))
+        {
+            Console.WriteLine($"No Date Taken found for {filePath}. Skipping.");
+            return null;
+        }
+
+        return dateTaken;
     }
 
     private static IEnumerable<string> GetSupportedImageFiles(string sourceDirectoryPath)
