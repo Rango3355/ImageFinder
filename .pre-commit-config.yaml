@@ -5,13 +5,17 @@ repos:
     rev: v4.6.0
     hooks:
       - id: check-yaml
+        name: "YAML Syntax Checker"
       - id: end-of-file-fixer
+        name: "End of File Fixer"
       - id: trailing-whitespace
+        name: "Trailing Whitespace Remover"
 
   - repo: https://github.com/compilerla/conventional-pre-commit
     rev: v3.6.0
     hooks:
       - id: conventional-pre-commit
+        name: "Conventional Commits Check"
         stages: [commit-msg]
         args: [--strict]
 
@@ -19,14 +23,14 @@ repos:
     rev: v3.1.0
     hooks:
       - id: prettier
+        name: "Prettier (JSON/YAML/Markdown)"
         files: \.(json|yml|yaml|md)$
 
   - repo: local
     hooks:
       - id: dotnet-format
-        name: dotnet format (verify)
+        name: "C# Formatting Check"
         entry: dotnet format --verify-no-changes
         language: system
-        files: \.cs
+        files: \.(cs|csx)$
         pass_filenames: false
-        always_run: true
