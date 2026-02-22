@@ -14,19 +14,34 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Check Conventional Commits (PR commits)
+        if: github.event_name == 'pull_request'
+        uses: webiny/action-conventional-commits@v1
+
       - name: Setup .NET 10
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "10.0.x"
 
+      - name: Setup Node (for Prettier)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
       - name: Restore
         run: dotnet restore
 
+      - name: Verify formatting (C#)
+        run: dotnet format --verify-no-changes
+
+      - name: Verify formatting (Prettier)
+        run: npx prettier@3.2.5 --check "**/*.{json,yml,yaml,md}"
+
       - name: Build
         run: dotnet build --no-restore -c Release -warnaserror
-      
+
       - name: Detect test projects
-        id: detect-tests  
+        id: detect-tests
         shell: pwsh
         run: |
           $matches = Get-ChildItem -Recurse -Filter *.csproj |
