@@ -34,10 +34,7 @@ public class ImageCollector : IImageCollector
         List<Task> workers = [];
         foreach (string filePath in files)
         {
-            DateTime? dateTaken = await GetDateTakenAsync(filePath, cancellationToken);
-
             workers.Add(ProcessFileAsync(
-                dateTaken,
                 filePath,
                 imageDirectoryModel,
                 semaphore,
@@ -54,7 +51,6 @@ public class ImageCollector : IImageCollector
     }
 
     private static async Task ProcessFileAsync(
-        DateTime? dateTaken,
         string filePath,
         ImageDirectoryModel imageDirectoryModel,
         SemaphoreSlim semaphore,
@@ -65,6 +61,8 @@ public class ImageCollector : IImageCollector
 
         try
         {
+            DateTime? dateTaken = await GetDateTakenAsync(filePath, cancellationToken);
+
             cancellationToken.ThrowIfCancellationRequested();
 
             string? year = dateTaken?.Year.ToString();
