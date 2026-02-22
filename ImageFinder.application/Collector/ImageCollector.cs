@@ -7,24 +7,20 @@ namespace ImageFinder.application.Collector;
 
 public class ImageCollector : IImageCollector
 {
+    private const int FileCopyBufferSize = 81920;
+
     public async Task CollectAndOrganiseImagesAsync(
         ImageDirectoryModel imageDirectoryModel,
         IProgress<double>? progress = null,
-        CancellationToken cancellationToken = default
-        )
+        CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(imageDirectoryModel);
         ArgumentException.ThrowIfNullOrEmpty(imageDirectoryModel.SourceDirectoryPath);
         ArgumentException.ThrowIfNullOrEmpty(imageDirectoryModel.DestinationDirectoryPath);
 
-        List<string> files = [.. System.IO.Directory
-            .EnumerateFiles(imageDirectoryModel.SourceDirectoryPath, "*.*", SearchOption.AllDirectories)
-            .Where(filePath =>
-                Array.Exists(ImageModel.SupportedExtensions,
-                    ext => filePath.EndsWith(ext, StringComparison.OrdinalIgnoreCase)))];
+        List<string> files = GetSupportedImageFiles(imageDirectoryModel.SourceDirectoryPath).ToList();
 
         int totalFiles = files.Count;
-
         if (totalFiles == 0)
         {
             progress?.Report(1.0);
@@ -32,12 +28,10 @@ public class ImageCollector : IImageCollector
         }
 
         int completed = 0;
-
         int maxConcurrency = Math.Max(1, Environment.ProcessorCount * 2); // IO-bound: allow a bit more concurrency
         using SemaphoreSlim semaphore = new(maxConcurrency);
 
         List<Task> workers = [];
-
         foreach (string filePath in files)
         {
             workers.Add(ProcessFileAsync(
@@ -82,45 +76,31 @@ public class ImageCollector : IImageCollector
             string year = dateTaken.Year.ToString();
             string month = dateTaken.ToString("MMMM", CultureInfo.InvariantCulture);
 
-            string destDir = Path.Combine(imageDirectoryModel.DestinationDirectoryPath, year, month);
-            System.IO.Directory.CreateDirectory(destDir);
+            string destinationDirectory = Path.Combine(imageDirectoryModel.DestinationDirectoryPath, year, month);
+            Directory.CreateDirectory(destinationDirectory);
 
-            string destFilePath = Path.Combine(destDir, Path.GetFileName(filePath));
-            if (File.Exists(destFilePath))
-            {
-                string uniqueName = string.Concat(
-                    Path.GetFileNameWithoutExtension(filePath),
-                    "_",
-                    Guid.NewGuid()
-                        .ToString()
-                        .AsSpan(0, 8),
-                    Path.GetExtension(filePath));
-
-                destFilePath = Path.Combine(destDir, uniqueName);
-            }
-
-            const int bufferSize = 81920;
+            string destinationFilePath = BuildDestinationFilePath(filePath, destinationDirectory);
 
             await using FileStream sourceStream = new(
                 filePath,
                 FileMode.Open,
                 FileAccess.Read,
                 FileShare.Read,
-                bufferSize,
+                FileCopyBufferSize,
                 FileOptions.Asynchronous);
 
             await using FileStream destinationStream = new(
-                destFilePath,
+                destinationFilePath,
                 FileMode.CreateNew,
                 FileAccess.Write,
                 FileShare.None,
-                bufferSize,
+                FileCopyBufferSize,
                 FileOptions.Asynchronous);
 
             await sourceStream.CopyToAsync(destinationStream, cancellationToken)
                 .ConfigureAwait(false);
 
-            Console.WriteLine($"Copied: {filePath} → {destFilePath}");
+            Console.WriteLine($"Copied: {filePath} -> {destinationFilePath}");
         }
         catch (OperationCanceledException)
         {
@@ -138,16 +118,43 @@ public class ImageCollector : IImageCollector
         }
     }
 
+    private static IEnumerable<string> GetSupportedImageFiles(string sourceDirectoryPath)
+    {
+        return Directory.EnumerateFiles(sourceDirectoryPath, "*.*", SearchOption.AllDirectories)
+            .Where(filePath =>
+                Array.Exists(
+                    ImageModel.SupportedExtensions,
+                    extension => filePath.EndsWith(extension, StringComparison.OrdinalIgnoreCase)));
+    }
+
+    private static string BuildDestinationFilePath(string sourceFilePath, string destinationDirectory)
+    {
+        string destinationFilePath = Path.Combine(destinationDirectory, Path.GetFileName(sourceFilePath));
+        if (!File.Exists(destinationFilePath))
+        {
+            return destinationFilePath;
+        }
+
+        string uniqueName = string.Concat(
+            Path.GetFileNameWithoutExtension(sourceFilePath),
+            "_",
+            Guid.NewGuid().ToString().AsSpan(0, 8),
+            Path.GetExtension(sourceFilePath));
+
+        return Path.Combine(destinationDirectory, uniqueName);
+    }
+
     private static bool TryGetExifDateTaken(IReadOnlyList<MetadataExtractor.Directory> directories, out DateTime dateTaken)
     {
         dateTaken = default;
 
         ExifSubIfdDirectory? subIfdDirectory = directories.OfType<ExifSubIfdDirectory>().FirstOrDefault();
-        if (subIfdDirectory != null && subIfdDirectory.TryGetDateTime(ExifDirectoryBase.TagDateTimeOriginal, out dateTaken))
+        if (subIfdDirectory is not null &&
+            subIfdDirectory.TryGetDateTime(ExifDirectoryBase.TagDateTimeOriginal, out dateTaken))
             return true;
 
         ExifIfd0Directory? ifd0 = directories.OfType<ExifIfd0Directory>().FirstOrDefault();
-        if (ifd0 != null && ifd0.TryGetDateTime(ExifDirectoryBase.TagDateTime, out dateTaken))
+        if (ifd0 is not null && ifd0.TryGetDateTime(ExifDirectoryBase.TagDateTime, out dateTaken))
             return true;
 
         return false;
