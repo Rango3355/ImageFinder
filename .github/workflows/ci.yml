@@ -16,7 +16,7 @@ jobs:
 
       - name: Check Conventional Commits (PR commits)
         if: github.event_name == 'pull_request'
-        uses: webiny/action-conventional-commits@main
+        uses: webiny/action-conventional-commits@v1.3.1
 
       - name: Setup .NET 10
         uses: actions/setup-dotnet@v4
