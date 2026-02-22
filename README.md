@@ -24,23 +24,58 @@ graph LR
 - Supported extensions: `.jpg`, `.jpeg`, `.png`, `.gif`, `.bmp`, `.tiff`.
 - Images are grouped into `Destination/{Year}/{Month}` based on EXIF "Date Taken".
 - Files with duplicate names gain a short GUID suffix to avoid overwriting.
-- Files without EXIF dates (or with invalid EXIF) are skipped.
+- Files without EXIF dates (or with invalid EXIF) are copied to `Destination/Unsorted`.
 - EXIF metadata is preserved during copy (including location/date if present).
 - Progress is reported via `IProgress<double>` and surfaced in the WPF UI.
+
+### Unsorted images
+
+When a file does not contain a usable EXIF date, Image Finder still copies it and places it under an `Unsorted` path in the destination directory. This keeps unmatched files visible for manual review instead of dropping them.
 
 ## Setup
 
 1. Install the .NET 10 SDK (for `ImageFinder.wpf`, `ImageFinder.application`, and `ImageFinder.domain`). The console app targets .NET 8 if you prefer the stable SDK there.
 2. On Windows, restore and build the solution:
 
-    ```bash
-    dotnet restore
-    dotnet build ImageFinder.sln
-    ```
+   ```bash
+   dotnet restore
+   dotnet build ImageFinder.sln
+   ```
 
-    The WPF project requires Windows (uses `net10.0-windows7.0`, Windows Forms folder picker, and WPF).
+   The WPF project requires Windows (uses `net10.0-windows7.0`, Windows Forms folder picker, and WPF).
 
 All required NuGet packages (`MetadataExtractor`, `CommunityToolkit.Mvvm`) are already referenced.
+
+## CI workflow
+
+The repository includes a GitHub Actions workflow at `.github/workflows/ci.yml` that runs on pushes and pull requests to `main`.
+
+Checks currently include:
+
+- Conventional commit validation for pull request commits.
+- `dotnet format --verify-no-changes` for C# formatting.
+- `prettier --check` for JSON/YAML/Markdown files.
+- `dotnet build` with warnings treated as errors.
+- `dotnet test` when test projects are detected.
+
+## Pre-commit hooks
+
+This repository includes `.pre-commit-config.yaml` to enforce local checks before code reaches CI.
+
+Configured hooks:
+
+- YAML and whitespace hygiene checks.
+- Conventional commit message validation (`commit-msg` hook).
+- Prettier formatting checks for JSON/YAML/Markdown.
+- `dotnet format --verify-no-changes` for C# files.
+
+Example setup:
+
+```bash
+pip install pre-commit
+pre-commit install --hook-type pre-commit --hook-type commit-msg
+pre-commit run --all-files
+```
 
 ## Usage
 
