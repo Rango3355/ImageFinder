@@ -3,13 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
 VisualStudioVersion = 18.0.11222.15
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageFinder.Console", "ImageFinder.console\ImageFinder.Console.csproj", "{A68033EA-3915-176E-EE92-2B1434EE17B5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageFinder.wpf", "ImageFinder.wpf\ImageFinder.wpf.csproj", "{262E05F1-1B8D-4A14-B914-02A8BAA000A5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageFinder.domain", "ImageFinder.domain\ImageFinder.domain.csproj", "{070B0282-A242-4C26-904D-D2561EE09166}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageFinder.application", "ImageFinder.application\ImageFinder.application.csproj", "{984F0EFE-8F4C-4D01-BDB4-D20972918548}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageFinder.wpf", "ImageFinder.wpf\ImageFinder.wpf.csproj", "{262E05F1-1B8D-4A14-B914-02A8BAA000A5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{9ECD7F14-BEF1-429F-A8FB-A15A5077B083}"
 	ProjectSection(SolutionItems) = preProject
@@ -22,10 +20,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A68033EA-3915-176E-EE92-2B1434EE17B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A68033EA-3915-176E-EE92-2B1434EE17B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A68033EA-3915-176E-EE92-2B1434EE17B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A68033EA-3915-176E-EE92-2B1434EE17B5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{070B0282-A242-4C26-904D-D2561EE09166}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{070B0282-A242-4C26-904D-D2561EE09166}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{070B0282-A242-4C26-904D-D2561EE09166}.Release|Any CPU.ActiveCfg = Release|Any CPU

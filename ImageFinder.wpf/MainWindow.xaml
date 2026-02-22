@@ -36,7 +36,7 @@
 
                 <Border Style="{StaticResource CardBorder}" Margin="0 0 8 0">
                     <StackPanel>
-                        <TextBlock Text="Step 1 • Source"
+                        <TextBlock Text="Step 1 - Source"
                                    FontSize="18"
                                    FontWeight="SemiBold"
                                    Margin="0 0 4 0" />
@@ -44,7 +44,7 @@
                                    Foreground="{StaticResource TextMutedBrush}"
                                    Margin="0 0 6 0" />
 
-                        <Button Content="📁  Select source folder"
+                        <Button Content="Select source folder"
                                 Command="{Binding BrowseSourceCommand}"
                                 IsEnabled="{Binding IsNotBusy}"/>
 
@@ -57,7 +57,7 @@
 
                 <Border Grid.Column="1" Style="{StaticResource CardBorder}" Margin="8 0 0 0">
                     <StackPanel>
-                        <TextBlock Text="Step 2 • Destination"
+                        <TextBlock Text="Step 2 - Destination"
                                    FontSize="18"
                                    FontWeight="SemiBold"
                                    Margin="0 0 4 0" />
@@ -65,7 +65,7 @@
                                    Foreground="{StaticResource TextMutedBrush}"
                                    Margin="0 0 6 0" />
 
-                        <Button Content="📂  Select destination folder"
+                        <Button Content="Select destination folder"
                                 Command="{Binding BrowseDestinationCommand}"
                                 IsEnabled="{Binding CanPickDestination}" />
 
@@ -109,11 +109,11 @@
                     </StackPanel>
 
                     <StackPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center">
-                        <Button Content="▶  Start"
+                        <Button Content="Start"
                                 Command="{Binding StartProcessingCommand}"
                                 IsEnabled="{Binding CanStart}"
                                 Width="140" />
-                        <Button Content="↺  Start over"
+                        <Button Content="Start over"
                                 Command="{Binding ResetCommand}"
                                 Background="#1F2937"
                                 Foreground="{StaticResource TextPrimaryBrush}"

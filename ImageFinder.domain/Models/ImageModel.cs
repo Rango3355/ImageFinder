@@ -1,5 +1,6 @@
-﻿namespace ImageFinder.domain.Models;
+namespace ImageFinder.domain.Models;
+
 public static class ImageModel
 {
-    public static string[] SupportedExtensions { get; set; } = [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff"];
+    public static readonly string[] SupportedExtensions = [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff"];
 }
