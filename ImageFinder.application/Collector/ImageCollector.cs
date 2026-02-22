@@ -77,7 +77,7 @@ public class ImageCollector : IImageCollector
             string month = dateTaken.ToString("MMMM", CultureInfo.InvariantCulture);
 
             string destinationDirectory = Path.Combine(imageDirectoryModel.DestinationDirectoryPath, year, month);
-            Directory.CreateDirectory(destinationDirectory);
+            System.IO.Directory.CreateDirectory(destinationDirectory);
 
             string destinationFilePath = BuildDestinationFilePath(filePath, destinationDirectory);
 
@@ -120,7 +120,7 @@ public class ImageCollector : IImageCollector
 
     private static IEnumerable<string> GetSupportedImageFiles(string sourceDirectoryPath)
     {
-        return Directory.EnumerateFiles(sourceDirectoryPath, "*.*", SearchOption.AllDirectories)
+        return System.IO.Directory.EnumerateFiles(sourceDirectoryPath, "*.*", SearchOption.AllDirectories)
             .Where(filePath =>
                 Array.Exists(
                     ImageModel.SupportedExtensions,
