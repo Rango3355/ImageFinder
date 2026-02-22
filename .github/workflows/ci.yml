@@ -18,6 +18,11 @@ jobs:
         if: github.event_name == 'pull_request'
         uses: webiny/action-conventional-commits@v1.3.1
 
+      - name: Setup Python (for pre-commit)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
       - name: Setup .NET 10
         uses: actions/setup-dotnet@v4
         with:
@@ -31,11 +36,10 @@ jobs:
       - name: Restore
         run: dotnet restore
 
-      - name: Verify formatting (C#)
-        run: dotnet format --verify-no-changes
-
-      - name: Verify formatting (Prettier)
-        run: npx prettier@3.2.5 --check "**/*.{json,yml,yaml,md}"
+      - name: Run pre-commit
+        uses: pre-commit/action@v3.0.1
+        with:
+          extra_args: --all-files
 
       - name: Build
         run: dotnet build --no-restore -c Release -warnaserror
