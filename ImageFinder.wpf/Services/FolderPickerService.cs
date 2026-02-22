@@ -1,6 +1,6 @@
-namespace ImageFinder.wpf.Services;
-
 using System.Windows.Forms;
+
+namespace ImageFinder.wpf.Services;
 
 public class FolderPickerService : IFolderPicker
 {
@@ -13,7 +13,6 @@ public class FolderPickerService : IFolderPicker
             UseDescriptionForTitle = true
         };
 
-        DialogResult result = dialog.ShowDialog();
-        return result == DialogResult.OK ? dialog.SelectedPath : null;
+        return dialog.ShowDialog() == DialogResult.OK ? dialog.SelectedPath : null;
     }
 }

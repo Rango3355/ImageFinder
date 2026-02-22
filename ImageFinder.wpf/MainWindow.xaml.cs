@@ -11,8 +11,8 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        ImageOrganizer imageOrganizer = new(new ImageCollector());
-        FolderPickerService folderPicker = new();
-        DataContext = new MainWindowViewModel(imageOrganizer, folderPicker);
+        DataContext = new MainWindowViewModel(
+            new ImageOrganizer(new ImageCollector()),
+            new FolderPickerService());
     }
 }
