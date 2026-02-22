@@ -37,7 +37,7 @@ jobs:
         run: dotnet restore
 
       - name: Run pre-commit
-        uses: pre-commit/action@v3.0.1
+        uses: pre-commit/action@v4.5.1
         with:
           extra_args: --all-files
 
