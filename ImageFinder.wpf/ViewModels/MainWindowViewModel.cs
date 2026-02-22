@@ -7,6 +7,9 @@ namespace ImageFinder.wpf.ViewModels;
 
 public partial class MainWindowViewModel : ObservableObject
 {
+    private const string InitialStatusMessage = "Choose your source and destination folders to begin.";
+    private const string OrganizingStatusMessage = "Organising images...";
+
     private readonly IImageOrganizer _imageOrganizer;
     private readonly IFolderPicker _folderPicker;
 
@@ -30,7 +33,7 @@ public partial class MainWindowViewModel : ObservableObject
     private bool isBusy;
 
     [ObservableProperty]
-    private string statusMessage = "Choose your source and destination folders to begin.";
+    private string statusMessage = InitialStatusMessage;
 
     public bool IsNotBusy => !IsBusy;
     public bool CanPickDestination => !string.IsNullOrWhiteSpace(SourcePath) && !IsBusy;
@@ -57,29 +60,19 @@ public partial class MainWindowViewModel : ObservableObject
 
     private Task BrowseSourceAsync()
     {
-        string? pickedPath = _folderPicker.PickFolder("Select the folder that currently holds your photos");
-        if (string.IsNullOrWhiteSpace(pickedPath))
-        {
-            return Task.CompletedTask;
-        }
-
-        SourcePath = pickedPath;
-        StatusMessage = "Source selected. Now choose where the organised images should go.";
-        StartProcessingCommand.NotifyCanExecuteChanged();
+        TrySetPathFromPicker(
+            "Select the folder that currently holds your photos",
+            path => SourcePath = path,
+            "Source selected. Now choose where the organised images should go.");
         return Task.CompletedTask;
     }
 
     private Task BrowseDestinationAsync()
     {
-        string? pickedPath = _folderPicker.PickFolder("Select where you want the organised photos to be stored");
-        if (string.IsNullOrWhiteSpace(pickedPath))
-        {
-            return Task.CompletedTask;
-        }
-
-        DestinationPath = pickedPath;
-        StatusMessage = "Ready when you are. Hit start to organise your images.";
-        StartProcessingCommand.NotifyCanExecuteChanged();
+        TrySetPathFromPicker(
+            "Select where you want the organised photos to be stored",
+            path => DestinationPath = path,
+            "Ready when you are. Hit start to organise your images.");
         return Task.CompletedTask;
     }
 
@@ -95,13 +88,13 @@ public partial class MainWindowViewModel : ObservableObject
         {
             IsBusy = true;
             Progress = 0;
-            StatusMessage = "Organising images...";
+            StatusMessage = OrganizingStatusMessage;
             StartProcessingCommand.NotifyCanExecuteChanged();
 
             Progress<double> progress = new(p =>
             {
                 Progress = p;
-                StatusMessage = $"Organising images... {ProgressPercent}";
+                StatusMessage = $"{OrganizingStatusMessage} {ProgressPercent}";
             });
 
             await _imageOrganizer.OrganizeAsync(
@@ -127,7 +120,20 @@ public partial class MainWindowViewModel : ObservableObject
         SourcePath = null;
         DestinationPath = null;
         Progress = 0;
-        StatusMessage = "Choose your source and destination folders to begin.";
+        StatusMessage = InitialStatusMessage;
+        StartProcessingCommand.NotifyCanExecuteChanged();
+    }
+
+    private void TrySetPathFromPicker(string prompt, Action<string> setPath, string successMessage)
+    {
+        string? pickedPath = _folderPicker.PickFolder(prompt);
+        if (string.IsNullOrWhiteSpace(pickedPath))
+        {
+            return;
+        }
+
+        setPath(pickedPath);
+        StatusMessage = successMessage;
         StartProcessingCommand.NotifyCanExecuteChanged();
     }
 }
