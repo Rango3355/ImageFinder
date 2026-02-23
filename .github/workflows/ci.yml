@@ -14,19 +14,38 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Check Conventional Commits (PR commits)
+        if: github.event_name == 'pull_request'
+        uses: webiny/action-conventional-commits@v1.3.1
+
+      - name: Setup Python (for pre-commit)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
       - name: Setup .NET 10
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "10.0.x"
 
+      - name: Setup Node (for Prettier)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
       - name: Restore
         run: dotnet restore
 
+      - name: Run pre-commit
+        uses: pre-commit/action@v3.0.1
+        with:
+          extra_args: --all-files
+
       - name: Build
         run: dotnet build --no-restore -c Release -warnaserror
-      
+
       - name: Detect test projects
-        id: detect-tests  
+        id: detect-tests
         shell: pwsh
         run: |
           $matches = Get-ChildItem -Recurse -Filter *.csproj |

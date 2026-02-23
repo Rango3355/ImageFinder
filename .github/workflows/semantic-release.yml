@@ -8,7 +8,7 @@ on:
 jobs:
   semantic-release:
     if: >
-      ${{ 
+      ${{
         github.event.workflow_run.conclusion == 'success' &&
         github.event.workflow_run.head_branch == 'main' &&
         github.event.workflow_run.event == 'push'
@@ -18,16 +18,16 @@ jobs:
       issues: write
       pull-requests: write
     runs-on: windows-latest
-    
+
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 0
-      
+
       - name: Ensure tags are present
         run: git fetch --tags
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
